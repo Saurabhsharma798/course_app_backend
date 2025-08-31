@@ -7,8 +7,6 @@ const userRouter=require("./routes/user")
 
 // middleware for parsing request body
 app.use(bodyParser.json())
-
-
 app.use('/admin',adminRouter)
 app.use('/user',userRouter)
 
