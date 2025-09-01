@@ -2,6 +2,7 @@ const { Router } = require("express");
 const userMiddleware = require("../middleware/user");
 const { User, Course } = require("../db/index");
 const router=Router()
+const {jwtSecret}=require("../config")
 
 router.post('/signup',async (req,res)=>{
     const username = req.body.username
@@ -11,6 +12,23 @@ router.post('/signup',async (req,res)=>{
     res.json({msg:"user created successfully"})
     
 });
+router.post('/signin',async (req,res)=>{
+    const username = req.body.username
+    const password = req.body.password
+
+    const user = await User.findOne({
+        username,password
+    })
+    if (user){
+        const token = jwt.sign({
+            username
+        },jwtSecret)
+        res.json({token})
+    }else{
+        res.json({msg:"incorrect email and password"})
+    }
+})
+
 
 router.get('/courses'.userMiddleware,async (req,res)=>{
     const response = await Course.find({})

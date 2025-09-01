@@ -1,6 +1,6 @@
 const { Admin } = require("../db/index")
-
-
+const jwt=require("jsonwebtoken")
+const {jwtSecret}=require("../config")
 async function adminMiddleware(req,res,next){
     // const username = req.headers['username']
     // const password =  req.headers['password']
@@ -20,6 +20,14 @@ async function adminMiddleware(req,res,next){
     const token=req.headers.authorization
     const words=token.split(" ")
     const jwtToken=words[1]
+    const decodeValue = jwt.verify(jwtToken,jwtSecret)
+    if (decodeValue){
+        next();
+    }else{
+        res.status(403).json({
+            msg:"you are not authenticated"
+        })
+    }
 
 }
 

@@ -1,7 +1,10 @@
 const { Router } = require("express");
 const adminMiddleware = require("../middleware/admin");
 const { Admin, Course } = require("../db");
+const { route } = require("./user");
 const router=Router()
+const jwt = require("jsonwebtoken")
+const {jwtSecret}=require("../config")
 
 router.post('/signup',async (req,res)=>{
     const username = req.body.username
@@ -14,6 +17,23 @@ router.post('/signup',async (req,res)=>{
         res.status(403).json({msg:"error while creating Admin"})
     }
 });
+
+router.post('/signin',async (req,res)=>{
+    const username = req.body.username
+    const password = req.body.password
+
+    const user = await Admin.findOne({
+        username,password
+    })
+    if (user){
+        const token = jwt.sign({
+            username
+        },jwtSecret)
+        res.json({token})
+    }else{
+        res.json({msg:"incorrect email and password"})
+    }
+})
 
 router.post('/courses',adminMiddleware,async (req,res)=>{
     const title=req.body.title
